@@ -76,3 +76,55 @@ video {
     font-size: 1.2em;
     color: #333;
 }
+
+#textOverlay {
+    position: absolute;
+    top: 10px; /* Ajuste conforme necessário */
+    left: 10px; /* Ajuste conforme necessário */
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.5); /* Fundo semi-transparente */
+    padding: 5px;
+}
+
+#mathProblem {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.5); /* Fundo semi-transparente */
+    padding: 5px;
+}
+
+#successMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: green;
+    font-size: 36px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.7); /* Fundo semi-transparente */
+    padding: 10px;
+    display: none;
+}
+
+#errorMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: green;
+    font-size: 36px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.7); /* Fundo semi-transparente */
+    padding: 10px;
+    display: none;
+}
+
+.hidden {
+    display: none;
+}

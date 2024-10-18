@@ -2,10 +2,14 @@ const cameraButton = document.getElementById('cameraButton');
 const video = document.getElementById('video');
 const videoContainer = document.getElementById('videoContainer');
 const numberDisplay = document.getElementById('number');
+const mathProblem = document.getElementById('mathProblem');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
 let handDetector;
 let camera;
 let canvas;
 let ctx;
+let currentAnswer;
 
 // Função para inicializar o detector de mãos com MediaPipe
 async function initializeHandDetector() {
@@ -27,7 +31,7 @@ async function initializeHandDetector() {
 
 // Função para lidar com os resultados do MediaPipe
 function onResults(results) {
-    // console.log('Resultados recebidos do detector de mãos:', results);
+    console.log('Resultados recebidos do detector de mãos:', results);
     if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
         numberDisplay.textContent = '-';
         return;
@@ -35,34 +39,39 @@ function onResults(results) {
     const landmarks = results.multiHandLandmarks[0];
     const fingersUp = countFingersUp(landmarks);
     numberDisplay.textContent = fingersUp;
+
+    // Verifica se a resposta está correta
+    if (fingersUp === currentAnswer) {
+        showSuccessMessage();
+        setTimeout(() => {
+            hideSuccessMessage();
+            generateMathProblem();
+        }, 2000);
+    } else {
+        showErrorMessage();
+        setTimeout(() => {
+            hideErrorMessage();
+        }, 2000);
+    }
 }
 
 // Função para contar os dedos levantados
 function countFingersUp(landmarks) {
-    const tips = [4, 8, 12, 16, 20]; // Índices das pontas dos dedos
-    const pipJoints = [2, 6, 10, 14, 18]; // Índices das articulações PIP
-
-    let count = -1; // Inicializa o contador em 0
+    const tips = [4, 8, 12, 16, 20];
+    const pipJoints = [2, 6, 10, 14, 18];
+    let count = -1;
 
     // Verifica se cada dedo está levantado
     for (let i = 0; i < tips.length; i++) {
         const tip = landmarks[tips[i]];
         const pip = landmarks[pipJoints[i]];
-
-        // Debug: Imprime as coordenadas
-        console.log(`Dedo ${i + 1}: tip.y = ${tip.y}, pip.y = ${pip.y}`);
-
-        // Se a ponta do dedo (tip) estiver acima da articulação PIP, conta como levantado
         if (tip.y < pip.y) {
-            count++; // Contabiliza o dedo levantado
+            count++;
         }
     }
 
-    // Para debug: imprime a contagem final
-    console.log(`Dedos contados: ${count}`);
-    return count; // Retorna a contagem de dedos levantados
+    return count;
 }
-
 
 // Função para configurar a câmera e canvas
 async function startCamera() {
@@ -90,6 +99,9 @@ async function startCamera() {
             console.log('Vídeo carregado. Iniciando processamento...');
             processVideo();
         });
+
+        // Gera o primeiro problema de matemática
+        generateMathProblem();
     } catch (err) {
         alert('Não foi possível acessar a câmera. Verifique as permissões.');
         console.error('Erro ao iniciar a câmera:', err);
@@ -101,6 +113,34 @@ async function processVideo() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     await handDetector.send({ image: canvas });
     requestAnimationFrame(processVideo);
+}
+
+// Função para gerar uma conta matemática
+function generateMathProblem() {
+    const num1 = Math.floor(Math.random() * 3);
+    const num2 = Math.floor(Math.random() * 3);
+    currentAnswer = num1 + num2;
+    mathProblem.textContent = `${num1} + ${num2} = ?`;
+}
+
+// Função para mostrar mensagem de sucesso
+function showSuccessMessage() {
+    successMessage.style.display = 'block';
+}
+
+// Função para esconder mensagem de sucesso
+function hideSuccessMessage() {
+    successMessage.style.display = 'none';
+}
+
+// Função para mostrar mensagem de erro
+function showErrorMessage() {
+    errorMessage.style.display = 'block';
+}
+
+// Função para esconder mensagem de erro
+function hideErrorMessage() {
+    errorMessage.style.display = 'none';
 }
 
 // Chama a função para iniciar a câmera quando o botão é clicado
