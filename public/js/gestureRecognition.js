@@ -4,7 +4,7 @@ const videoContainer = document.getElementById('videoContainer');
 const numberDisplay = document.getElementById('number');
 const mathProblem = document.getElementById('mathProblem');
 const successMessage = document.getElementById('successMessage');
-const errorMessage = document.getElementById('errorMessage');
+const tryAgainMessage = document.getElementById('tryAgainMessage');
 let handDetector;
 let camera;
 let canvas;
@@ -47,10 +47,10 @@ function onResults(results) {
             hideSuccessMessage();
             generateMathProblem();
         }, 2000);
-    } else {
-        showErrorMessage();
+    } else if (fingersUp !== '-') {
+        showTryAgainMessage();
         setTimeout(() => {
-            hideErrorMessage();
+            hideTryAgainMessage();
         }, 2000);
     }
 }
@@ -117,10 +117,30 @@ async function processVideo() {
 
 // Função para gerar uma conta matemática
 function generateMathProblem() {
-    const num1 = Math.floor(Math.random() * 3);
-    const num2 = Math.floor(Math.random() * 3);
-    currentAnswer = num1 + num2;
-    mathProblem.textContent = `${num1} + ${num2} = ?`;
+    const operations = ['+', '-', '*', '/'];
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    let num1, num2;
+
+    do {
+        num1 = Math.floor(Math.random() * 6);
+        num2 = Math.floor(Math.random() * 6);
+        switch (operation) {
+            case '+':
+                currentAnswer = num1 + num2;
+                break;
+            case '-':
+                currentAnswer = num1 - num2;
+                break;
+            case '*':
+                currentAnswer = num1 * num2;
+                break;
+            case '/':
+                currentAnswer = Math.floor(num1 / num2);
+                break;
+        }
+    } while (currentAnswer < 0 || currentAnswer > 5);
+
+    mathProblem.textContent = `${num1} ${operation} ${num2} = ?`;
 }
 
 // Função para mostrar mensagem de sucesso
@@ -133,14 +153,14 @@ function hideSuccessMessage() {
     successMessage.style.display = 'none';
 }
 
-// Função para mostrar mensagem de erro
-function showErrorMessage() {
-    errorMessage.style.display = 'block';
+// Função para mostrar mensagem de "tente outra vez"
+function showTryAgainMessage() {
+    tryAgainMessage.style.display = 'block';
 }
 
-// Função para esconder mensagem de erro
-function hideErrorMessage() {
-    errorMessage.style.display = 'none';
+// Função para esconder mensagem de "tente outra vez"
+function hideTryAgainMessage() {
+    tryAgainMessage.style.display = 'none';
 }
 
 // Chama a função para iniciar a câmera quando o botão é clicado
