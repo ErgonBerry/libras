@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permissão de Câmera</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script> -->
+    <!-- MediaPipe Camera -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Permissão de Acesso à Câmera</h1>
+        <p>Precisamos da sua permissão para acessar a câmera do dispositivo.</p>
+        <button class="btn" id="cameraButton">Permitir Acesso à Câmera</button>
+        <div id="videoContainer" class="video-container">
+            <video id="video" autoplay></video>
+            <p id="gestureResult">Número detectado: <span id="number">-</span></p>
+        </div>
+    </div>
+    <script src="/js/gestureRecognition.js"></script>
+</body>
+</html>
