@@ -10,6 +10,7 @@ let camera;
 let canvas;
 let ctx;
 let currentAnswer;
+let isProcessing = false; // Variável para controlar o estado de processamento
 
 // Função para inicializar o detector de mãos com MediaPipe
 async function initializeHandDetector() {
@@ -31,11 +32,16 @@ async function initializeHandDetector() {
 
 // Função para lidar com os resultados do MediaPipe
 function onResults(results) {
+    if (isProcessing) {
+        return; // Se estiver processando, ignora a detecção atual
+    }
+
     console.log('Resultados recebidos do detector de mãos:', results);
     if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
         numberDisplay.textContent = '-';
         return;
     }
+
     const landmarks = results.multiHandLandmarks[0];
     const fingersUp = countFingersUp(landmarks);
     numberDisplay.textContent = fingersUp;
@@ -43,15 +49,19 @@ function onResults(results) {
     // Verifica se a resposta está correta
     if (fingersUp === currentAnswer) {
         showSuccessMessage();
+        isProcessing = true; // Ativa o estado de processamento
         setTimeout(() => {
             hideSuccessMessage();
             generateMathProblem();
-        }, 2000);
+            isProcessing = false; // Reativa a detecção após o delay
+        }, 2000); // Delay de 2 segundos
     } else if (fingersUp !== '-') {
         showTryAgainMessage();
+        isProcessing = true; // Ativa o estado de processamento
         setTimeout(() => {
             hideTryAgainMessage();
-        }, 2000);
+            isProcessing = false; // Reativa a detecção após o delay
+        }, 2000); // Delay de 2 segundos
     }
 }
 
@@ -61,7 +71,6 @@ function countFingersUp(landmarks) {
     const pipJoints = [2, 6, 10, 14, 18];
     let count = -1;
 
-    // Verifica se cada dedo está levantado
     for (let i = 0; i < tips.length; i++) {
         const tip = landmarks[tips[i]];
         const pip = landmarks[pipJoints[i]];
@@ -85,22 +94,18 @@ async function startCamera() {
         cameraButton.style.display = 'none';
         console.log('Câmera iniciada.');
 
-        // Inicializa o detector de mãos
         await initializeHandDetector();
 
-        // Configura o canvas
         canvas = document.createElement('canvas');
         ctx = canvas.getContext('2d', { willReadFrequently: true });
         canvas.width = 640;
         canvas.height = 480;
 
-        // Inicia a captura do vídeo
         video.addEventListener('loadeddata', () => {
             console.log('Vídeo carregado. Iniciando processamento...');
             processVideo();
         });
 
-        // Gera o primeiro problema de matemática
         generateMathProblem();
     } catch (err) {
         alert('Não foi possível acessar a câmera. Verifique as permissões.');
