@@ -44,6 +44,13 @@ function onResults(results) {
 
     const landmarks = results.multiHandLandmarks[0];
     const fingersUp = countFingersUp(landmarks);
+
+    // Ignora valores negativos
+    if (fingersUp < 0) {
+        console.log('Número de dedos negativo detectado, ignorando.');
+        return;
+    }
+    
     numberDisplay.textContent = fingersUp;
 
     // Verifica se a resposta está correta
@@ -54,14 +61,14 @@ function onResults(results) {
             hideSuccessMessage();
             generateMathProblem();
             isProcessing = false; // Reativa a detecção após o delay
-        }, 2000); // Delay de 2 segundos
+        }, 1500); // Delay de 2 segundos
     } else if (fingersUp !== '-') {
         showTryAgainMessage();
         isProcessing = true; // Ativa o estado de processamento
         setTimeout(() => {
             hideTryAgainMessage();
             isProcessing = false; // Reativa a detecção após o delay
-        }, 2000); // Delay de 2 segundos
+        }, 1500); // Delay de 2 segundos
     }
 }
 
