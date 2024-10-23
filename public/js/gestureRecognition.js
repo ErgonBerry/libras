@@ -11,6 +11,7 @@ let canvas;
 let ctx;
 let currentAnswer;
 let isProcessing = false; // Variável para controlar o estado de processamento
+let errorCount = 0; // Variável para contar os erros consecutivos
 
 // Função para inicializar o detector de mãos com MediaPipe
 async function initializeHandDetector() {
@@ -44,24 +45,40 @@ function onResults(results) {
 
     const landmarks = results.multiHandLandmarks[0];
     const fingersUp = countFingersUp(landmarks);
+
+    // Ignora valores negativos
+    if (fingersUp < 0) {
+        console.log('Número de dedos negativo detectado, ignorando.');
+        return;
+    }
+
     numberDisplay.textContent = fingersUp;
 
     // Verifica se a resposta está correta
     if (fingersUp === currentAnswer) {
         showSuccessMessage();
         isProcessing = true; // Ativa o estado de processamento
+        errorCount = 0; // Reseta o contador de erros ao acertar
         setTimeout(() => {
             hideSuccessMessage();
             generateMathProblem();
             isProcessing = false; // Reativa a detecção após o delay
-        }, 2000); // Delay de 2 segundos
+        }, 1500); // Delay de 2 segundos
     } else if (fingersUp !== '-') {
         showTryAgainMessage();
         isProcessing = true; // Ativa o estado de processamento
+        errorCount++; // Incrementa o contador de erros
         setTimeout(() => {
             hideTryAgainMessage();
             isProcessing = false; // Reativa a detecção após o delay
-        }, 2000); // Delay de 2 segundos
+
+            // Verifica se o usuário errou três vezes
+            if (errorCount >= 3) {
+                console.log('Usuário errou três vezes. Gerando novo cálculo.');
+                generateMathProblem();
+                errorCount = 0; // Reseta o contador de erros após gerar um novo cálculo
+            }
+        }, 1500); // Delay de 2 segundos
     }
 }
 
